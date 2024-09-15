@@ -207,3 +207,4 @@ Flask-Bcrypt==1.0.0
 Flask-SQLAlchemy==3.0.3
 psycopg2-binary==2.9.7
 Werkzeug==2.3.8
+Flask-Cors~=5.0.0
