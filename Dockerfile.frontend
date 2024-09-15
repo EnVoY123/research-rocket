@@ -1,0 +1,39 @@
+# Используем официальный образ Node.js
+FROM node:18 AS build
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем package.json и package-lock.json в контейнер
+COPY ./frontend/package*.json ./
+
+# Устанавливаем зависимости
+RUN npm install
+
+# Копируем все файлы проекта в контейнер
+COPY ./frontend/. .
+
+# EXPOSE 8080
+
+# Собираем приложение
+RUN npm run build
+
+# CMD ["npm", "run", "serve"]
+
+# Шаг для production сборки
+FROM nginx:alpine
+
+# Копируем собранные файлы в директорию Nginx
+# COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /app/dist
+
+# Копируем файл конфигурации Nginx
+COPY ./frontend/nginx.conf /etc/nginx/nginx.conf
+
+# Открываем порт
+EXPOSE 80
+
+RUN chown nginx:nginx /usr/share/nginx/html/*
+
+# Запускаем Nginx
+CMD ["nginx", "-g", "daemon off;"]
